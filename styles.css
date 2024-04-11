@@ -710,8 +710,7 @@ nav {
     right: 0;
     bottom: 0;
     left: 0;
-    box-shadow: inset -5px -5px 50px #fff;
-    z-index: 1; }
+    box-shadow: inset -5px -5px 50px #fff; }
 
 .saved-pattern-wrapper {
   display: grid;
@@ -739,32 +738,23 @@ nav {
   font-weight: 600;
   letter-spacing: 1px; }
 
-#h_sentence,
-.h-sentence,
-#v_sentence
-.v-sentence {
+.h-phrase,
+.v-phrase {
   font-size: 16px;
   font-size: 1.6rem;
   white-space: pre; }
-  #h_sentence:empty,
-  .h-sentence:empty,
-  #v_sentence
-.v-sentence:empty {
+  .h-phrase:empty,
+  .v-phrase:empty {
     padding-left: 4px; }
-    #h_sentence:empty::before,
-    .h-sentence:empty::before,
-    #v_sentence
-.v-sentence:empty::before {
+    .h-phrase:empty::before,
+    .v-phrase:empty::before {
       content: "😭"; }
-  #h_sentence:focus,
-  .h-sentence:focus,
-  #v_sentence
-.v-sentence:focus {
+  .h-phrase:focus,
+  .v-phrase:focus {
     outline: none;
     border-color: #98bdcf; }
 
-#h_sentence,
-.h-sentence {
+.h-phrase {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
   width: 100%;
@@ -776,11 +766,10 @@ nav {
   padding-bottom: calc(var(--box-size) / 2);
   border-bottom: 2px solid transparent; }
 
-.h-sentence {
+.h-phrase {
   padding-bottom: 0; }
 
-#v_sentence,
-.v-sentence {
+.v-phrase {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
   justify-self: end;
@@ -792,22 +781,24 @@ nav {
   padding-right: calc(var(--box-size) / 2);
   border-right: 2px solid transparent; }
 
-.v-sentence {
+.v-phrase {
   padding-right: 0; }
 
 #pattern,
 .saved-pattern {
   grid-column: 2 / 3;
   grid-row: 2 / 3;
-  position: relative;
+  position: relative; }
+
+.pattern-container {
   display: flex;
   flex-wrap: wrap; }
 
-.fancy #pattern {
+.fancy .pattern-container {
   outline: calc(var(--line-width) * 2) solid #59717d;
   outline-offset: calc(var(--line-width) / 2);
   border-radius: calc(var(--line-width) / 4); }
-  .fancy #pattern:before {
+  .fancy .pattern-container:before {
     display: block;
     content: "";
     position: absolute;

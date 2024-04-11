@@ -69,7 +69,7 @@ nav {
     bottom: 0;
     left: 0;
     box-shadow: inset -5px -5px 50px $white;
-    z-index: 1;
+    // z-index: 1;
   }
 }
 
@@ -99,10 +99,8 @@ nav {
   @include uppercase;
 }
 
-#h_sentence,
-.h-sentence,
-#v_sentence
-.v-sentence {
+.h-phrase,
+.v-phrase {
   @include font-size(1.6);
   white-space: pre;
 
@@ -120,8 +118,7 @@ nav {
   }
 }
 
-#h_sentence,
-.h-sentence {
+.h-phrase {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
   width: 100%;
@@ -134,12 +131,11 @@ nav {
   border-bottom: 2px solid transparent;
 }
 
-.h-sentence {
+.h-phrase {
   padding-bottom: 0;
 }
 
-#v_sentence,
-.v-sentence {
+.v-phrase {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
   justify-self: end;
@@ -152,7 +148,7 @@ nav {
   border-right: 2px solid transparent;
 }
 
-.v-sentence {
+.v-phrase {
   padding-right: 0;
 }
 
@@ -161,12 +157,15 @@ nav {
   grid-column: 2 / 3;
   grid-row: 2 / 3;
   position: relative;
+}
+
+.pattern-container {
   display: flex;
   flex-wrap: wrap;
 }
 
 .fancy {
-  #pattern {
+  .pattern-container {
     outline: calc(var(--line-width) * 2) solid $blue-6;
       outline-offset: calc(var(--line-width) / 2);
       border-radius: calc(var(--line-width) / 4);
