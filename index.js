@@ -1,4 +1,5 @@
 let patterns = getPatterns();
+let drawerState = getDrawerState();
 
 const wrapper = document.querySelector(".wrapper");
 const savePatternButton = document.querySelector('.save');
@@ -6,6 +7,12 @@ const h_phrase_el = document.getElementById("h_phrase");
 const v_phrase_el = document.getElementById("v_phrase");
 const patternViewer = document.getElementById("pattern");
 const patternsList = document.querySelector('.patterns-list');
+const showListButton = document.querySelector('.show-list');
+const hideListButton = document.querySelector('.hide-list');
+const drawer_el = document.querySelector('.drawer');
+const mainHeader = document.querySelector('.main-header');
+const countPlain = document.querySelector('.count-plain');
+const countBadge = document.querySelector('.count-badge');
 
 let horizontal_content = h_phrase_el.innerHTML;
 const horizontal_length = horizontal_content.length;
@@ -169,34 +176,9 @@ function generateBlocks(horizontal_string, vertical_string) {
   return blocks;
 }
 
-// function drawPattern(h_content, v_content) {
-
-//   patternViewer.innerHTML = '';
-//   const h_phrase = h_content || "";
-//   const v_phrase = v_content || "";
-
-//   const pattern_width = h_phrase.length
-//   const pattern_height = v_phrase.length
-
-//   const size = useCustomProperty('--box-size');
-
-//   patternViewer.style.width = `calc(${pattern_width} * ${size})`;
-//   patternViewer.style.height = `calc(${pattern_height} * ${size})`;
-
-//   const blocks = Array.from(generateBlocks(h_phrase, v_phrase));
-//   const blocks_html = blocks.map(node => node.outerHTML).join('');
-//   const patternContainer = createEl("div", "pattern-container");
-//   // patternViewer.innerHTML += patternContainer;
-//   patternContainer.innerHTML = blocks_html;
-
-//   return patternContainer;
-// };
-
-function drawPattern2(h_phrase, v_phrase) {
+function drawPattern(h_phrase, v_phrase) {
   let h = h_phrase || "";
   let v = v_phrase || "";
-  // console.log(h);
-  // console.log(v);
 
   const patternContainer = createEl("div", "pattern-container");
   const pattern_width = h.length;
@@ -217,7 +199,7 @@ function drawPattern2(h_phrase, v_phrase) {
 function renderMainPattern() {
   horizontal_content = h_phrase_el.innerHTML;
   vertical_content = v_phrase_el.innerHTML;
-  patternViewer.innerHTML = drawPattern2(horizontal_content, vertical_content).outerHTML;
+  patternViewer.innerHTML = drawPattern(horizontal_content, vertical_content).outerHTML;
 }
 
 function getPatterns() {
@@ -225,17 +207,36 @@ function getPatterns() {
   return storedPatterns;
 }
 
-function savePattern(e) {
-  const storedPatterns = getPatterns();
+function getDrawerState() {
+  const drawer_state = JSON.parse(localStorage.getItem('drawer')) || '';
+  return drawer_state;
+}
+
+function setDrawerState() {
+  const drawer_state = getDrawerState();
+  if (drawer_state === true) {
+    showList();
+  }
+}
+
+function updateCount(count) {
+  countPlain.innerHTML = count;
+  countBadge.innerHTML = count;
+}
+
+function savePattern(event) {
+  const patternsArray = getPatterns();
   console.log("save button pressed");
-  e.preventDefault();
+  event.preventDefault();
   const h = h_phrase_el.innerHTML || "";
   const v = v_phrase_el.innerHTML || "";
   const patternItem = { h, v };
 
-  storedPatterns.push(patternItem);
-  populateList(storedPatterns, patternsList);
-  localStorage.setItem('patterns', JSON.stringify(storedPatterns));
+  patternsArray.push(patternItem);
+  populateList(patternsArray, patternsList);
+  localStorage.setItem('patterns', JSON.stringify(patternsArray));
+  const count = patternsArray.length;
+  updateCount(count);
 }
 
 function removePattern(event) {
@@ -248,55 +249,87 @@ function removePattern(event) {
   patternsArray.splice(index, 1);
   localStorage.setItem('patterns', JSON.stringify(patternsArray));
   populateList(patternsArray, patternsList);
+  const count = patternsArray.length;
+  updateCount(count);
+}
+
+function loadPattern(event) {
+  event.preventDefault();
+  const item_el = event.target.closest(".pattern-list-item");
+  const h = item_el.querySelector('.h-phrase').textContent;
+  const v = item_el.querySelector('.v-phrase').textContent;
+  h_phrase_el.innerHTML = h;
+  v_phrase_el.innerHTML = v;
+  renderMainPattern();
+}
+
+function showList() {
+  drawer_el.classList.add('show');
+  showListButton.classList.add('hide');
+  mainHeader.classList.add('inset');
+  localStorage.setItem('drawer', JSON.stringify(true));
+}
+
+function hideList() {
+  drawer_el.classList.remove('show');
+  showListButton.classList.remove('hide');
+  mainHeader.classList.remove('inset');
+  localStorage.setItem('drawer', JSON.stringify(false));
 }
 
 function populateList(patterns = [], patternsList) {
   console.log(patterns);
-  let renderPatterns = [];
   patternsList.innerHTML = '';
   if (patterns.length > 0) {
-    patternsList.innerHTML = patterns.map((pattern, i) => {
-      // console.log(pattern);
-      // console.log("- - - - ");
-      const h_content = pattern.h_phrase;
-      const v_content = pattern.v_phrase;
+    patterns.map((pattern, i) => {
+      const h_content = pattern.h;
+      const v_content = pattern.v;
       const patternListItem = `
-        <div class="pattern-list-item" data-index=${i}>
-          <div class="saved-pattern-wrapper">
-            <div class="h-phrase">${h_content}</div>
-            <div class="v-phrase">${v_content}</div>
-            <button class="button remove">remove</div>
-            </div>
-            </div>
-            `
-            // <div class="saved-pattern" id="${i}">${drawPattern2(h_content, v_content).outerHTML}<div>
-      console.log("- - - - - - - - ");
-      console.log(patternListItem);
-      console.log("- - - - - - - - ");
-      return patternListItem;
+      <div class="pattern-list-item" data-index=${i}>
+        <button class="button ghost-destructive small remove">Remove</button>
+        <div class="saved-pattern-wrapper">
+          <div class="h-phrase">${h_content}</div>
+          <div class="v-phrase">${v_content}</div>
+          <div class="saved-pattern" id="${i}">${drawPattern(h_content, v_content).outerHTML}<div>
+        </div>
+      </div>
+      `
+
+      patternsList.innerHTML += patternListItem;
     }).join('');
   }
 }
 
-// savePatternButton.addEventListener('click', savePattern);
 document.body.addEventListener('click', function (event) {
+  console.log(event.target);
   if (event.target.classList.contains('remove')) {
     removePattern(event);
   };
   if (event.target.classList.contains('save')) {
     savePattern(event);
   };
+  if (event.target.classList.contains('show-list')) {
+    showList(event);
+  };
+  if (event.target.classList.contains('hide-list')) {
+    hideList(event);
+  };
+  if (event.target.classList.contains('pattern-list-item')) {
+    loadPattern(event);
+  };
 });
 
 (function () {
   renderMainPattern();
   populateList(patterns, patternsList);
-  h_phrase_el.addEventListener('keyup', (event) => {
-    console.log(event.key);
+  setDrawerState();
+  const patternsArray = getPatterns();
+  const count = patternsArray.length;
+  updateCount(count);
+  h_phrase_el.addEventListener('keyup', () => {
     renderMainPattern();
   });
-  v_phrase_el.addEventListener('keyup', (event) => {
-    console.log(event.key);
+  v_phrase_el.addEventListener('keyup', () => {
     renderMainPattern();
   });
 })();
