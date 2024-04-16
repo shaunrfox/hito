@@ -1,0 +1,29 @@
+/*
+ * * * * * * * * * * * * * * * * * * *
+ * @paper
+ * * * * * * * * * * * * * * * * * * *
+ */
+
+.paper-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: -1;
+	background-color: tint(#ebeae1, 40);
+}
+
+
+.paper {
+	background-color: $white;
+	box-shadow: 0 5px 15px 5px #d5d4cb; // #c2c1b9; //shade(#e9e8de, 90); //rgba($off-black, .2);
+	width: auto;
+	max-width: 90%;
+	height: 100%;
+	max-height: 90%;
+	aspect-ratio: 4 / 5;
+}

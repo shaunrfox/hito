@@ -800,6 +800,32 @@ hr {
 ::selection {
   background: #bfe3f2; }
 
+/*
+ * * * * * * * * * * * * * * * * * * *
+ * @paper
+ * * * * * * * * * * * * * * * * * * *
+ */
+.paper-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  background-color: #f7f7f3; }
+
+.paper {
+  background-color: #fff;
+  box-shadow: 0 5px 15px 5px #d5d4cb;
+  width: auto;
+  max-width: 90%;
+  height: 100%;
+  max-height: 90%;
+  aspect-ratio: 4 / 5; }
+
 :root {
   --line-width: 3px;
   --box-size: 1.5em; }
