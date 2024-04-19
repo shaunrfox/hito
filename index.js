@@ -221,7 +221,7 @@ function setDrawerState() {
 
 function updateCount(count) {
   countPlain.innerHTML = count;
-  countBadge.innerHTML = count;
+  // countBadge.innerHTML = count;
 }
 
 function savePattern(event) {
