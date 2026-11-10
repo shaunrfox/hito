@@ -8,8 +8,11 @@ export const cardSizes: { key: CardSizeKey; label: string; size: PageSize }[] = 
   { key: 'card5x7', label: '5 × 7', size: pageSizes.card5x7 },
 ];
 
-/** The card always draws the screen layout at this scale: 3/16 in cells. */
-export const CARD_SCALE = 0.75;
+/** The card draws the screen layout at this scale when it fits: 3/16 in cells. */
+export const TARGET_SCALE = 0.75;
+
+/** The pattern may shrink to this scale before letters are limited (20% less). */
+export const MIN_SCALE = 0.6;
 
 /** Margin slider range and default, in inches. */
 export const MARGIN = { min: 0.125, max: 1, step: 0.125, initial: 0.25 };
@@ -29,7 +32,7 @@ export const cardInches = (size: PageSize, orientation: Orientation) => {
     : { width: short, height: long };
 };
 
-/** How many letters fit across and down at the fixed scale. */
+/** How many letters fit across and down at the smallest scale. */
 export const capacity = (
   size: PageSize,
   orientation: Orientation,
@@ -40,11 +43,33 @@ export const capacity = (
     Math.max(
       0,
       Math.floor(
-        ((inches - 2 * margin) * PX_PER_IN) / CARD_SCALE / CELL -
+        ((inches - 2 * margin) * PX_PER_IN) / MIN_SCALE / CELL -
           FRAME / CELL,
       ),
     );
   return { across: fit(width), down: fit(height) };
+};
+
+/**
+ * The scale for the card: the target scale when the words fit, otherwise
+ * just small enough to fit, but never below the smallest scale.
+ */
+export const fitScale = (
+  size: PageSize,
+  orientation: Orientation,
+  margin: number,
+  across: number,
+  down: number,
+) => {
+  const { width, height } = cardInches(size, orientation);
+  const room = (inches: number) => (inches - 2 * margin) * PX_PER_IN;
+  const natural = (letters: number) => FRAME + CELL * letters;
+  const scale = Math.min(
+    TARGET_SCALE,
+    room(width) / natural(across),
+    room(height) / natural(down),
+  );
+  return Math.max(MIN_SCALE, scale);
 };
 
 /** True when both words fit the card. */

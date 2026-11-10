@@ -6,13 +6,21 @@ type PhraseProps = {
   onChange?: (value: string) => void;
   /** Blocks typing past this many letters. Deleting always works. */
   maxLength?: number;
+  /** Called when a keystroke is blocked by `maxLength`. */
+  onLimit?: () => void;
 };
 
 /**
  * One of the two words. When `onChange` is set, you type straight onto the
  * letters, as in the first version. The text is read as plain text.
  */
-export const Phrase = ({ axis, value, onChange, maxLength }: PhraseProps) => {
+export const Phrase = ({
+  axis,
+  value,
+  onChange,
+  maxLength,
+  onLimit,
+}: PhraseProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const editable = onChange !== undefined;
 
@@ -32,11 +40,22 @@ export const Phrase = ({ axis, value, onChange, maxLength }: PhraseProps) => {
           ? Array.from(selection.toString()).length
           : 0;
       const current = Array.from(el.textContent ?? '').length;
-      if (current - selected + added > maxLength) event.preventDefault();
+      if (current - selected + added <= maxLength) return;
+      event.preventDefault();
+      // A short side-to-side nudge. Restart it on every blocked keystroke.
+      el.classList.remove('nudge');
+      void el.offsetWidth;
+      el.classList.add('nudge');
+      onLimit?.();
     };
+    const onEnd = () => el.classList.remove('nudge');
     el.addEventListener('beforeinput', onBeforeInput);
-    return () => el.removeEventListener('beforeinput', onBeforeInput);
-  }, [maxLength]);
+    el.addEventListener('animationend', onEnd);
+    return () => {
+      el.removeEventListener('beforeinput', onBeforeInput);
+      el.removeEventListener('animationend', onEnd);
+    };
+  }, [maxLength, onLimit]);
 
   // React does not own the text. Sync it only when it differs, so the caret
   // stays put while typing.

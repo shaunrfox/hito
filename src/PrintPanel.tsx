@@ -1,6 +1,5 @@
 import {
   type CardSizeKey,
-  capacity,
   cardSizes,
   formatInches,
   largestMargin,
@@ -18,6 +17,8 @@ type PrintPanelProps = {
   onOrientation: (orientation: Orientation) => void;
   onMargin: (margin: number) => void;
   onGuide: (show: boolean) => void;
+  /** Called when the margin slider hits the largest margin that fits. */
+  onLimit: () => void;
 };
 
 const OrientationIcon = ({ orientation }: { orientation: Orientation }) => (
@@ -41,30 +42,10 @@ export const PrintPanel = ({
   onOrientation,
   onMargin,
   onGuide,
+  onLimit,
 }: PrintPanelProps) => {
   const size = (cardSizes.find((c) => c.key === sizeKey) ?? cardSizes[0]).size;
-  const cap = capacity(size, orientation, margin);
   const maxMargin = largestMargin(size, orientation, across, down);
-  const tooLong = maxMargin === null;
-
-  // When nothing fits, find the card that needs the fewest letters cut.
-  const cut = cardSizes
-    .flatMap((c) =>
-      (['portrait', 'landscape'] as const).map((o) => {
-        const fit = capacity(c.size, o, MARGIN.min);
-        return {
-          across: Math.max(0, across - fit.across),
-          down: Math.max(0, down - fit.down),
-        };
-      }),
-    )
-    .sort((a, b) => a.across + a.down - (b.across + b.down))[0];
-  const cutText = [
-    cut.across > 0 && `${String(cut.across)} across`,
-    cut.down > 0 && `${String(cut.down)} down`,
-  ]
-    .filter(Boolean)
-    .join(' and ');
 
   return (
     <div className="print-panel" role="group" aria-label="Card settings">
@@ -134,7 +115,12 @@ export const PrintPanel = ({
           value={margin}
           onChange={(event) => {
             const value = Number(event.target.value);
-            onMargin(maxMargin === null ? value : Math.min(value, maxMargin));
+            if (maxMargin !== null && value > maxMargin) {
+              onMargin(maxMargin);
+              onLimit();
+              return;
+            }
+            onMargin(value);
           }}
           onPointerDown={() => onGuide(true)}
           onPointerUp={() => onGuide(false)}
@@ -147,22 +133,6 @@ export const PrintPanel = ({
         <span className="panel-value">{formatInches(margin)}</span>
       </div>
 
-      <div className="panel-field panel-fit" aria-live="polite">
-        {tooLong ? (
-          <span className="panel-warning">
-            Too long for any card. Remove {cutText}.
-          </span>
-        ) : (
-          <>
-            <span>
-              <strong>{across}</strong> of {cap.across} across
-            </span>
-            <span>
-              <strong>{down}</strong> of {cap.down} down
-            </span>
-          </>
-        )}
-      </div>
     </div>
   );
 };

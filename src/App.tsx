@@ -1,17 +1,19 @@
 import { PrintPage, PrintPreview } from '@okshaun/components';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
 import {
-  CARD_SCALE,
   type CardSizeKey,
   capacity,
   cardInches,
   cardSizes,
+  fitScale,
   largestMargin,
   MARGIN,
+  MIN_SCALE,
   type Orientation,
 } from './cards';
 import { Composition } from './Composition';
+import { type NoticeMessage, Notice } from './Notice';
 import { PrintPanel } from './PrintPanel';
 import { useKonami } from './useKonami';
 
@@ -19,10 +21,20 @@ type Mode = 'edit' | 'print';
 
 const ORIENTATIONS: Orientation[] = ['portrait', 'landscape'];
 
-/** The card face: the composition at the fixed scale, centered in the margins. */
-const CardFace = ({ margin, children }: { margin: number; children: React.ReactNode }) => (
+const FULL = 'This card is full. Try a smaller margin or a bigger card.';
+
+/** The card face: the composition at the given scale, centered in the margins. */
+const CardFace = ({
+  margin,
+  scale,
+  children,
+}: {
+  margin: number;
+  scale: number;
+  children: ReactNode;
+}) => (
   <div className="card" style={{ padding: `${String(margin)}in` }}>
-    <div className="card-scale" style={{ transform: `scale(${String(CARD_SCALE)})` }}>
+    <div className="card-scale" style={{ transform: `scale(${String(scale)})` }}>
       {children}
     </div>
   </div>
@@ -36,7 +48,12 @@ export const App = () => {
   const [orientation, setOrientation] = useState<Orientation>('portrait');
   const [margin, setMargin] = useState(MARGIN.initial);
   const [guide, setGuide] = useState(false);
+  const [notice, setNotice] = useState<NoticeMessage | null>(null);
   const fancy = useKonami();
+  const warnFull = useCallback(
+    () => setNotice({ text: FULL, id: Date.now() }),
+    [],
+  );
 
   const size = (cardSizes.find((c) => c.key === sizeKey) ?? cardSizes[0]).size;
   const inches = cardInches(size, orientation);
@@ -44,6 +61,41 @@ export const App = () => {
   const down = Array.from(v).length;
   const cap = capacity(size, orientation, margin);
   const fitsNow = across <= cap.across && down <= cap.down;
+  const scale = fitsNow
+    ? fitScale(size, orientation, margin, across, down)
+    : MIN_SCALE;
+
+  // A word from edit mode that fits no card: say so until it is shortened.
+  const tooLong =
+    mode === 'print' &&
+    !fitsNow &&
+    largestMargin(size, orientation, across, down) === null;
+  useEffect(() => {
+    if (!tooLong) {
+      setNotice((n) => (n?.persistent ? null : n));
+      return;
+    }
+    const cut = cardSizes
+      .flatMap((c) =>
+        ORIENTATIONS.map((o) => {
+          const fit = capacity(c.size, o, MARGIN.min);
+          return {
+            across: Math.max(0, across - fit.across),
+            down: Math.max(0, down - fit.down),
+          };
+        }),
+      )
+      .sort((a, b) => a.across + a.down - (b.across + b.down))[0];
+    const parts = [
+      cut.across > 0 && `${String(cut.across)} across`,
+      cut.down > 0 && `${String(cut.down)} down`,
+    ].filter(Boolean);
+    setNotice({
+      text: `These words are too long for any card. Remove ${parts.join(' and ')}.`,
+      id: 0,
+      persistent: true,
+    });
+  }, [tooLong, across, down]);
 
   // Entering print mode: if the words do not fit, shrink the margin, then try
   // the other cards. Leave everything as is when nothing fits.
@@ -107,7 +159,7 @@ export const App = () => {
                 showMargins={guide}
                 className="paper"
               >
-                <CardFace margin={margin}>
+                <CardFace margin={margin} scale={scale}>
                   <Composition
                     variant="composition"
                     h={h}
@@ -116,6 +168,7 @@ export const App = () => {
                     onV={setV}
                     maxAcross={Math.max(cap.across, across)}
                     maxDown={Math.max(cap.down, down)}
+                    onLimit={warnFull}
                     fancy={fancy}
                   />
                 </CardFace>
@@ -131,7 +184,9 @@ export const App = () => {
               onOrientation={(o) => choose(sizeKey, o)}
               onMargin={setMargin}
               onGuide={setGuide}
+              onLimit={warnFull}
             />
+            <Notice message={notice} />
           </>
         )}
 
@@ -172,7 +227,7 @@ export const App = () => {
         aria-hidden
         style={{ width: `${String(inches.width)}in`, height: `${String(inches.height)}in` }}
       >
-        <CardFace margin={margin}>
+        <CardFace margin={margin} scale={scale}>
           <Composition variant="composition" h={h} v={v} fancy={fancy} />
         </CardFace>
       </div>
