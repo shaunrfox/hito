@@ -1,3 +1,5 @@
+import '@fontsource-variable/source-code-pro';
+import '@fontsource-variable/source-sans-3';
 import './styled-system/styles.css';
 import './index.css';
 
