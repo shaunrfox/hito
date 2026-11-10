@@ -1,38 +1,363 @@
-/* The card face, shared by the preview and the printed card. */
-.card-face {
+/*
+ * Styles from the first version of Hito (styles.scss, 2024), compiled.
+ * Fonts, colors, cell size, and stitch weight are unchanged.
+ */
+
+:root {
+  --line-width: 3px;
+  --box-size: 1.5em;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Source Sans 3', Verdana, Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  color: #111;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-size: 1.6rem;
+  background-color: #fff;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+#root {
+  display: contents;
+}
+
+.page-container {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  color: #3d5560;
 }
 
-.card-pattern {
-  flex: 1;
-  min-height: 0;
+/* - - - Buttons - - - */
+
+.button {
+  font-family: 'Source Sans 3', Verdana, Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  display: inline-block;
+  height: 30px;
+  line-height: 28px;
+  font-size: 1.5rem;
+  padding: 0 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(17, 17, 17, 0.3);
+  cursor: pointer;
+  background: #eee;
+  color: #111;
+  white-space: nowrap;
+}
+.button:focus {
+  outline: 0;
+}
+.button:focus-visible {
+  outline: 2px solid #98bdcf;
+  outline-offset: 1px;
+}
+.button:hover {
+  background: #f3f3f3;
+}
+.button:active,
+.button.selected {
+  background: #bebebe;
+}
+.button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.button:disabled:hover {
+  background: #f3f3f3;
 }
 
-.card-caption {
-  margin: 0;
-  padding-top: 0.12in;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 7pt;
-  letter-spacing: 0.15em;
-  text-align: center;
+.button.action {
+  background: #0090cb;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(17, 17, 17, 0.4);
+}
+.button.action:hover,
+.button.action:disabled:hover {
+  background: #4db1db;
+}
+.button.action:active {
+  background: #0073a2;
+}
+
+.button.outline {
+  background: #fff;
+}
+.button.outline:hover {
+  background: #fff;
+}
+.button.outline:active {
+  background: #ccc;
+}
+
+.button-group {
+  display: flex;
+}
+.button-group .button {
+  border-radius: 0;
+  margin-right: -1px;
+}
+.button-group .button:first-child {
+  border-radius: 4px 0 0 4px;
+}
+.button-group .button:last-child {
+  border-radius: 0 4px 4px 0;
+}
+.button-group .button.selected {
+  position: relative;
+  z-index: 5;
+  border-top-width: 2px;
+}
+
+/* - - - Header - - - */
+
+.main-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--box-size);
+  padding: var(--box-size);
+  padding-right: calc(var(--box-size) * 3);
+}
+
+/* - - - The words and the pattern - - - */
+
+.wrapper,
+.composition {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  grid-template-rows: 1fr max-content 1fr;
+  gap: var(--box-size);
+  align-items: center;
+  justify-content: center;
+  font-family: 'Source Code Pro', Monaco, monospace;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #111;
+}
+
+.wrapper {
+  height: 100%;
+  overflow: auto;
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.composition {
+  display: inline-grid;
+  /* Equal side tracks keep the pattern centered on the card, as on screen. */
+  grid-template-columns: calc(var(--box-size) + 2px) max-content calc(
+      var(--box-size) + 2px
+    );
+  grid-template-rows: calc(var(--box-size) + 2px) max-content calc(
+      var(--box-size) + 2px
+    );
+}
+
+.h-phrase,
+.v-phrase {
+  font-size: 1.6rem;
   white-space: pre;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+.h-phrase:empty,
+.v-phrase:empty {
+  padding-left: 4px;
+}
+.h-phrase:empty::before,
+.v-phrase:empty::before {
+  content: '😭';
+}
+.h-phrase:focus,
+.v-phrase:focus {
+  outline: none;
+  border-color: #98bdcf;
 }
 
-.print-only {
+.h-phrase {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  width: 100%;
+  line-height: var(--box-size);
+  letter-spacing: calc(var(--box-size) / 1.67);
+  padding-left: calc(var(--box-size) / 3);
+  margin-right: calc(var(--box-size) * -1);
+  padding-bottom: 0;
+  border-bottom: 2px solid transparent;
+  align-self: end;
+}
+
+.v-phrase {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  justify-self: end;
+  line-height: var(--box-size);
+  letter-spacing: calc(var(--box-size) / 6);
+  text-orientation: upright;
+  writing-mode: vertical-lr;
+  margin-top: 1px;
+  padding-right: 0;
+  border-right: 2px solid transparent;
+}
+
+.pattern {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  position: relative;
+}
+
+.pattern-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.block {
+  position: relative;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--box-size);
+  height: var(--box-size);
+  z-index: -1;
+}
+.block::before {
   display: none;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-width: calc(var(--box-size) / 4);
+  border-style: solid;
+}
+
+.h-line,
+.v-line {
+  position: absolute;
+  box-sizing: content-box;
+  border: calc(var(--line-width) / 2) solid #b4d4e3;
+  z-index: 2;
+  border-radius: 10px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.h-line {
+  width: var(--box-size);
+  height: 0;
+  top: calc((var(--line-width) / 2) * -1);
+  left: calc((var(--line-width) / 2) * -1);
+}
+
+.v-line {
+  width: 0;
+  height: var(--box-size);
+  top: calc((var(--line-width) / 2) * -1);
+  left: calc((var(--line-width) / 2) * -1);
+}
+
+/* - - - Konami: fancy - - - */
+
+.fancy .pattern-container {
+  outline: calc(var(--line-width) * 2) solid #59717d;
+  outline-offset: calc(var(--line-width) / 2);
+  border-radius: calc(var(--line-width) / 4);
+}
+.fancy .pattern-container::before {
+  display: block;
+  content: '';
+  position: absolute;
+  top: calc((var(--line-width) / 2) * -1);
+  right: calc((var(--line-width) / 2) * -1);
+  bottom: calc((var(--line-width) / 2) * -1);
+  left: calc((var(--line-width) / 2) * -1);
+  background-color: #fffdf3;
+  z-index: -2;
+}
+.fancy .block::after {
+  display: block;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: calc(var(--line-width) / 2) solid #59717d;
+  border-radius: var(--line-width);
+}
+.fancy .block.h-on.v-on::before {
+  display: block;
+  top: 0;
+  left: 0;
+  border-color: #b4d4e3;
+  border-bottom-right-radius: calc(var(--box-size) / 2);
+}
+
+/* - - - Print mode: the paper, from the 2024 "paper WIP" commit - - - */
+
+.paper-preview {
+  background: #f3f2ed;
+  padding-top: 80px;
+}
+
+.paper {
+  box-shadow: 0 5px 15px 5px #d5d4cb;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+}
+
+.fit-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.fit-box > div {
+  /* The composition keeps its natural size. FitBox scales it. */
+  flex-shrink: 0;
+  isolation: isolate;
+}
+
+/* - - - Printing - - - */
+
+/* Laid out off screen, so it is measured and ready when the printer asks. */
+.print-only {
+  position: fixed;
+  top: 0;
+  left: -100000px;
+  visibility: hidden;
+  background: #fff;
 }
 
 @media print {
   html,
   body {
-    margin: 0;
-    padding: 0;
+    width: auto;
+    height: auto;
     background: #fff;
   }
 
@@ -41,11 +366,9 @@
   }
 
   .print-only {
-    display: block;
-    box-sizing: border-box;
+    position: static;
+    visibility: visible;
     overflow: hidden;
     break-after: avoid;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
   }
 }

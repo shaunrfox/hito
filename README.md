@@ -6,8 +6,8 @@ Each character turns its row or column "on" or "off." Vowels, even digits, space
 
 ## Modes
 
-- **Edit** shows the pattern large, with each letter beside its row or column.
-- **Print** shows the card at its true paper size. Pick a size (A6, 4 × 6 in, 5 × 7 in, or 5.5 × 8.5 in) and an orientation, then press **Print card**. The app sets the page size for the printer. Only the card prints.
+- **Edit** is the original view. Type straight onto the letters across the top and down the side.
+- **Print** puts the same layout on a card at its true paper size. You can keep typing on the card. Pick a size (A6, 4 × 6 in, 5 × 7 in, or 5.5 × 8.5 in) and an orientation, then press **Print card**. The app sets the page size for the printer. Only the card prints.
 
 ## Run it
 
