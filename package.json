@@ -1,0 +1,30 @@
+{
+  "name": "hito",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Tiny hitomezashi generator. Type in the horizontal and vertical fields to generate patterns.",
+  "type": "module",
+  "scripts": {
+    "prepare": "panda codegen",
+    "dev": "panda && (panda --watch & vite)",
+    "build": "panda && tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/piazzolla": "^5.1.1",
+    "@fontsource/ibm-plex-mono": "^5.1.0",
+    "@fontsource/ibm-plex-sans": "^5.1.0",
+    "@okshaun/components": "file:../.pkgs/okshaun-components-4.1.5.tgz",
+    "@tanstack/react-form": "^1.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@pandacss/dev": "^1.8.0",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.5"
+  }
+}

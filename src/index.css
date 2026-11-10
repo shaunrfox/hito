@@ -1,0 +1,51 @@
+/* The card face, shared by the preview and the printed card. */
+.card-face {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  color: #3d5560;
+}
+
+.card-pattern {
+  flex: 1;
+  min-height: 0;
+}
+
+.card-caption {
+  margin: 0;
+  padding-top: 0.12in;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7pt;
+  letter-spacing: 0.15em;
+  text-align: center;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+    box-sizing: border-box;
+    overflow: hidden;
+    break-after: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
