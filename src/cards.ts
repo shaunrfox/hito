@@ -106,19 +106,3 @@ export const formatInches = (value: number) => {
   if (rest === 0) return `${String(whole)} in`;
   return `${whole > 0 ? String(whole) : ''}${fractions[rest]} in`;
 };
-
-/** Card styles, chosen in print mode. Framed is the Konami style from the first version. */
-export type CardStyle = 'plain' | 'framed' | 'indigo' | 'red';
-
-export const cardStyles: {
-  key: CardStyle;
-  label: string;
-  /** Swatch colors: the field and the stitch. */
-  field: string;
-  stitch: string;
-}[] = [
-  { key: 'plain', label: 'Plain', field: '#ffffff', stitch: '#b4d4e3' },
-  { key: 'framed', label: 'Framed', field: '#fffdf3', stitch: '#59717d' },
-  { key: 'indigo', label: 'Indigo', field: '#22325a', stitch: '#f1e9d6' },
-  { key: 'red', label: 'Red thread', field: '#f6efe0', stitch: '#b5322b' },
-];

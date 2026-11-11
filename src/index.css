@@ -6,6 +6,12 @@
 :root {
   --line-width: 3px;
   --box-size: 1.5em;
+  /* The original colors, used by every style. */
+  --stitch: #b4d4e3;
+  --dot: #59717d;
+  --corner: #b4d4e3;
+  --frame: #59717d;
+  --ground: #fffdf3;
 }
 
 *,
@@ -262,74 +268,118 @@ body {
   height: var(--box-size);
   z-index: -1;
 }
-.block::before {
-  display: none;
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-width: calc(var(--box-size) / 4);
-  border-style: solid;
-}
-
 .h-line,
 .v-line {
   position: absolute;
   box-sizing: content-box;
-  border: calc(var(--line-width) / 2) solid var(--stitch, #b4d4e3);
+  border: calc(var(--line-width) / 2) solid var(--stitch);
   z-index: 2;
-  border-radius: 10px;
+  border-radius: var(--cap, 10px);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 
+/* --gap shortens each stitch at both ends, like a running stitch. */
 .h-line {
-  width: var(--box-size);
+  width: calc(var(--box-size) - var(--gap, 0px));
   height: 0;
   top: calc((var(--line-width) / 2) * -1);
-  left: calc((var(--line-width) / 2) * -1);
+  left: calc(var(--gap, 0px) / 2 - var(--line-width) / 2);
 }
 
 .v-line {
   width: 0;
-  height: var(--box-size);
-  top: calc((var(--line-width) / 2) * -1);
+  height: calc(var(--box-size) - var(--gap, 0px));
+  top: calc(var(--gap, 0px) / 2 - var(--line-width) / 2);
   left: calc((var(--line-width) / 2) * -1);
 }
 
-/* - - - Konami: fancy - - - */
+/* - - - Card looks - - - */
 
-.fancy .pattern-container {
-  outline: calc(var(--line-width) * 2) solid #59717d;
+/*
+ * The parts of the 2024 Konami style, made adjustable. `fancy` (the Konami
+ * code in edit mode) turns on the original four: frame, ground, dots, corners.
+ */
+
+.block::before,
+.block::after {
+  content: '';
+  position: absolute;
+  display: none;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Frame: an outline around the pattern */
+:is(.has-frame, .fancy) .pattern-container {
+  outline: var(--frame-width, calc(var(--line-width) * 2)) solid var(--frame);
   outline-offset: calc(var(--line-width) / 2);
   border-radius: calc(var(--line-width) / 4);
 }
-.fancy .pattern-container::before {
+
+/* Ground: a light fill under the pattern only */
+:is(.has-ground, .fancy) .pattern-container::before {
   display: block;
   content: '';
   position: absolute;
-  top: calc((var(--line-width) / 2) * -1);
-  right: calc((var(--line-width) / 2) * -1);
-  bottom: calc((var(--line-width) / 2) * -1);
-  left: calc((var(--line-width) / 2) * -1);
-  background-color: #fffdf3;
+  inset: calc((var(--line-width) / 2) * -1);
+  background-color: var(--ground);
   z-index: -2;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
-.fancy .block::after {
+
+/* Dots in the middle of each cell */
+:is(.has-dots, .fancy) .block::after {
   display: block;
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  border: calc(var(--line-width) / 2) solid #59717d;
-  border-radius: var(--line-width);
+  width: var(--dot-size, var(--line-width));
+  height: var(--dot-size, var(--line-width));
+  background: var(--dot);
+  border-radius: var(--dot-radius, 50%);
+  transform: rotate(var(--dot-rotate, 0deg));
 }
-.fancy .block.h-on.v-on::before {
+
+/* Dots on the grid points, where stitches end */
+.has-point-dots .block::after {
   display: block;
   top: 0;
   left: 0;
-  border-color: #b4d4e3;
-  border-bottom-right-radius: calc(var(--box-size) / 2);
+  width: var(--dot-size, var(--line-width));
+  height: var(--dot-size, var(--line-width));
+  background: var(--dot);
+  border-radius: var(--dot-radius, 50%);
+  transform: translate(-50%, -50%) rotate(var(--dot-rotate, 0deg));
+}
+
+/* Corners: a shape where a top stitch and a left stitch meet */
+:is(.has-corners, .fancy) .block.h-on.v-on::before {
+  display: block;
+  top: 0;
+  left: 0;
+  width: var(--corner-size, calc(var(--box-size) / 2));
+  height: var(--corner-size, calc(var(--box-size) / 2));
+  background: var(--corner);
+  border-radius: var(--corner-radius, 0 0 100% 0);
+}
+
+/* Swatch buttons in the panel */
+.button.swatch {
+  width: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.swatch-preview {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  transform: scale(0.3);
+  pointer-events: none;
+}
+.swatch-preview .pattern-container {
+  position: relative;
 }
 
 /* - - - Print mode - - - */
@@ -367,32 +417,6 @@ body {
 }
 
 /* - - - Card styles - - - */
-
-/* The field fills the card inside the margins: a background clipped to the
-   content box, so the margin stays paper white. */
-.card {
-  background-clip: content-box;
-  background-color: var(--field, transparent);
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-
-.card.style-indigo {
-  --field: #22325a;
-  --stitch: #f1e9d6;
-  --ink: #f1e9d6;
-}
-
-.card.style-red {
-  --field: #f6efe0;
-  --stitch: #b5322b;
-  --ink: #3a2a22;
-}
-
-/* Swatch buttons in the panel */
-.button.swatch {
-  width: 38px;
-}
 
 .card-scale {
   flex-shrink: 0;

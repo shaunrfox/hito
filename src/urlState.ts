@@ -1,10 +1,5 @@
-import {
-  type CardSizeKey,
-  type CardStyle,
-  cardStyles,
-  MARGIN,
-  type Orientation,
-} from './cards';
+import { type CardSizeKey, MARGIN, type Orientation } from './cards';
+import { type StyleKey, styles } from './styles';
 
 export type Mode = 'edit' | 'print';
 
@@ -15,7 +10,7 @@ export type AppState = {
   sizeKey: CardSizeKey;
   orientation: Orientation;
   margin: number;
-  style: CardStyle;
+  style: StyleKey;
 };
 
 export const DEFAULTS: AppState = {
@@ -60,7 +55,7 @@ export const readState = (search = window.location.search): AppState => {
     state.orientation = orientation;
   }
 
-  const style = cardStyles.find((s) => s.key === params.get('style'));
+  const style = styles.find((s) => s.key === params.get('style'));
   if (style) state.style = style.key;
 
   const margin = Number(params.get('margin'));

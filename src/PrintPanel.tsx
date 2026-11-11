@@ -1,13 +1,13 @@
 import {
   type CardSizeKey,
-  type CardStyle,
   cardSizes,
-  cardStyles,
   formatInches,
   largestMargin,
   MARGIN,
   type Orientation,
 } from './cards';
+import { StitchGrid } from './StitchGrid';
+import { lookVars, type StyleKey, styleClasses, styles } from './styles';
 
 type PrintPanelProps = {
   sizeKey: CardSizeKey;
@@ -18,8 +18,8 @@ type PrintPanelProps = {
   onSize: (key: CardSizeKey) => void;
   onOrientation: (orientation: Orientation) => void;
   onMargin: (margin: number) => void;
-  cardStyle: CardStyle;
-  onStyle: (style: CardStyle) => void;
+  look: StyleKey;
+  onLook: (look: StyleKey) => void;
   onGuide: (show: boolean) => void;
   /** Called when the margin slider hits the largest margin that fits. */
   onLimit: () => void;
@@ -35,6 +35,15 @@ const OrientationIcon = ({ orientation }: { orientation: Orientation }) => (
   </svg>
 );
 
+/** A real 4 × 4 corner of the pattern in a style, shrunk to fit a button. */
+const StylePreview = ({ look }: { look: StyleKey }) => (
+  <div className={`swatch-preview ${styleClasses(look)}`} style={lookVars(look)}>
+    <div className="pattern">
+      <StitchGrid horizontal="HITO" vertical="MEZA" />
+    </div>
+  </div>
+);
+
 /** The floating print controls: size, orientation, margin, and what fits. */
 export const PrintPanel = ({
   sizeKey,
@@ -45,8 +54,8 @@ export const PrintPanel = ({
   onSize,
   onOrientation,
   onMargin,
-  cardStyle,
-  onStyle,
+  look,
+  onLook,
   onGuide,
   onLimit,
 }: PrintPanelProps) => {
@@ -144,35 +153,17 @@ export const PrintPanel = ({
           Style
         </span>
         <div className="button-group" role="group" aria-labelledby="style-label">
-          {cardStyles.map((option) => (
+          {styles.map((option) => (
             <button
               key={option.key}
               type="button"
-              className={`button icon swatch${cardStyle === option.key ? ' selected' : ''}`}
-              aria-pressed={cardStyle === option.key}
+              className={`button swatch${look === option.key ? ' selected' : ''}`}
+              aria-pressed={look === option.key}
               aria-label={option.label}
               title={option.label}
-              onClick={() => onStyle(option.key)}
+              onClick={() => onLook(option.key)}
             >
-              <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden>
-                <rect
-                  x="1.5"
-                  y="1.5"
-                  width="17"
-                  height="17"
-                  rx="2"
-                  fill={option.field}
-                  stroke="rgba(17, 17, 17, 0.25)"
-                  strokeWidth="1"
-                />
-                <path
-                  d="M4 8h4v4h4v-4h4"
-                  fill="none"
-                  stroke={option.stitch}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <StylePreview look={option.key} />
             </button>
           ))}
         </div>

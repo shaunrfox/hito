@@ -3,7 +3,6 @@ import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
 import {
   type CardSizeKey,
-  type CardStyle,
   capacity,
   cardInches,
   cardSizes,
@@ -16,6 +15,7 @@ import {
 import { Composition } from './Composition';
 import { type NoticeMessage, Notice } from './Notice';
 import { PrintPanel } from './PrintPanel';
+import { lookVars, type StyleKey, styleClasses } from './styles';
 import { type Mode, readState, writeState } from './urlState';
 import { useKonami } from './useKonami';
 
@@ -30,17 +30,17 @@ const FULL = 'This card is full. Try a smaller margin or a bigger card.';
 const CardFace = ({
   margin,
   scale,
-  cardStyle,
+  look,
   children,
 }: {
   margin: number;
   scale: number;
-  cardStyle: CardStyle;
+  look: StyleKey;
   children: ReactNode;
 }) => (
   <div
-    className={`card style-${cardStyle}`}
-    style={{ padding: `${String(margin)}in` }}
+    className={`card ${styleClasses(look)}`}
+    style={{ padding: `${String(margin)}in`, ...lookVars(look) }}
   >
     <div className="card-scale" style={{ transform: `scale(${String(scale)})` }}>
       {children}
@@ -55,13 +55,13 @@ export const App = () => {
   const [sizeKey, setSizeKey] = useState<CardSizeKey>(initial.sizeKey);
   const [orientation, setOrientation] = useState<Orientation>(initial.orientation);
   const [margin, setMargin] = useState(initial.margin);
-  const [cardStyle, setCardStyle] = useState<CardStyle>(initial.style);
+  const [look, setLook] = useState<StyleKey>(initial.style);
   const [guide, setGuide] = useState(false);
   const [notice, setNotice] = useState<NoticeMessage | null>(null);
   const fancy = useKonami();
   // The Konami code still works, and it picks Framed for the card too.
   useEffect(() => {
-    if (fancy) setCardStyle('framed');
+    if (fancy) setLook('framed');
   }, [fancy]);
   const warnFull = useCallback(
     () => setNotice({ text: FULL, id: Date.now() }),
@@ -142,8 +142,8 @@ export const App = () => {
 
   // Keep the URL in step, so a refresh keeps the card and the link can be shared.
   useEffect(() => {
-    writeState({ h, v, mode, sizeKey, orientation, margin, style: cardStyle });
-  }, [h, v, mode, sizeKey, orientation, margin, cardStyle]);
+    writeState({ h, v, mode, sizeKey, orientation, margin, style: look });
+  }, [h, v, mode, sizeKey, orientation, margin, look]);
 
   // The printer reads the paper size from the @page rule.
   useEffect(() => {
@@ -177,7 +177,7 @@ export const App = () => {
                 showMargins={guide}
                 className="paper"
               >
-                <CardFace margin={margin} scale={scale} cardStyle={cardStyle}>
+                <CardFace margin={margin} scale={scale} look={look}>
                   <Composition
                     variant="composition"
                     h={h}
@@ -187,7 +187,7 @@ export const App = () => {
                     maxAcross={Math.max(cap.across, across)}
                     maxDown={Math.max(cap.down, down)}
                     onLimit={warnFull}
-                    fancy={cardStyle === 'framed'}
+                    fancy={false}
                   />
                 </CardFace>
               </PrintPage>
@@ -201,8 +201,8 @@ export const App = () => {
               onSize={(key) => choose(key, orientation)}
               onOrientation={(o) => choose(sizeKey, o)}
               onMargin={setMargin}
-              cardStyle={cardStyle}
-              onStyle={setCardStyle}
+              look={look}
+              onLook={setLook}
               onGuide={setGuide}
               onLimit={warnFull}
             />
@@ -244,13 +244,8 @@ export const App = () => {
         aria-hidden
         style={{ width: `${String(inches.width)}in`, height: `${String(inches.height)}in` }}
       >
-        <CardFace margin={margin} scale={scale} cardStyle={cardStyle}>
-          <Composition
-            variant="composition"
-            h={h}
-            v={v}
-            fancy={cardStyle === 'framed'}
-          />
+        <CardFace margin={margin} scale={scale} look={look}>
+          <Composition variant="composition" h={h} v={v} fancy={false} />
         </CardFace>
       </div>
     </>
