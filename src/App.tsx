@@ -198,33 +198,30 @@ export const App = () => {
         )}
 
         <header className="main-header">
-          {mode === 'edit' ? (
+          {/* Print card sits left of the toggle, so the toggle never moves. */}
+          {mode === 'print' && (
             <button
               type="button"
-              className="button"
-              onClick={() => setMode('print')}
+              className="button action"
+              disabled={!canPrint}
+              onClick={() => window.print()}
             >
-              Print
+              Print card
             </button>
-          ) : (
-            <>
-              <button
-                type="button"
-                className="button outline"
-                onClick={() => setMode('edit')}
-              >
-                Done
-              </button>
-              <button
-                type="button"
-                className="button action"
-                disabled={!canPrint}
-                onClick={() => window.print()}
-              >
-                Print card
-              </button>
-            </>
           )}
+          <div className="button-group" role="group" aria-label="Mode">
+            {(['edit', 'print'] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                className={`button${mode === option ? ' selected' : ''}`}
+                aria-pressed={mode === option}
+                onClick={() => setMode(option)}
+              >
+                {option === 'edit' ? 'Edit' : 'Print'}
+              </button>
+            ))}
+          </div>
         </header>
       </div>
 

@@ -140,6 +140,26 @@ body {
   padding-right: calc(var(--box-size) * 3);
 }
 
+/* Header buttons are 44px tall, a comfortable size for touch on the iPad. */
+.main-header .button {
+  height: 44px;
+  line-height: 42px;
+  padding: 0 16px;
+}
+.main-header .button-group .button {
+  min-width: 72px;
+}
+
+/* Returning to edit mode: the words and pattern fade in. */
+.mode-edit .wrapper {
+  animation: view-in 150ms ease-out;
+}
+@keyframes view-in {
+  from {
+    opacity: 0;
+  }
+}
+
 /* - - - The words and the pattern - - - */
 
 .wrapper,
