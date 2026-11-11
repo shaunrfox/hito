@@ -1,4 +1,4 @@
-import { type CardSizeKey, MARGIN, type Orientation } from './cards';
+import { type CardSizeKey, cardSizes, MARGIN, type Orientation } from './cards';
 import { type StyleKey, styles } from './styles';
 
 export type Mode = 'edit' | 'print';
@@ -18,7 +18,7 @@ export const DEFAULTS: AppState = {
   h: 'HITOMEZASHI',
   v: 'HITOMEZASHI',
   mode: 'edit',
-  sizeKey: 'postcard',
+  sizeKey: cardSizes[0].key,
   orientation: 'portrait',
   margin: MARGIN.initial,
 };
@@ -45,7 +45,8 @@ export const readState = (search = window.location.search): AppState => {
   if (params.get('mode') === 'print') state.mode = 'print';
 
   const size = params.get('size');
-  const sizeKey = (Object.keys(SIZE_PARAM) as CardSizeKey[]).find(
+  // Only sizes on offer count. An old 4x6 link opens the default size.
+  const sizeKey = cardSizes.map((c) => c.key).find(
     (key) => SIZE_PARAM[key] === size,
   );
   if (sizeKey) state.sizeKey = sizeKey;

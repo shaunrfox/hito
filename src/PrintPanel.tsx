@@ -64,6 +64,8 @@ export const PrintPanel = ({
 
   return (
     <div className="print-panel" role="group" aria-label="Card settings">
+      {/* With one size on offer there is nothing to choose, so the field hides. */}
+      {cardSizes.length > 1 && (
       <div className="panel-field">
         <span className="panel-label" id="size-label">
           Size
@@ -87,6 +89,7 @@ export const PrintPanel = ({
           })}
         </div>
       </div>
+      )}
 
       <div className="panel-field">
         <span className="panel-label" id="orientation-label">

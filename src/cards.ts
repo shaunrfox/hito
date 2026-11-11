@@ -4,7 +4,8 @@ export type CardSizeKey = 'postcard' | 'card5x7';
 export type Orientation = 'portrait' | 'landscape';
 
 export const cardSizes: { key: CardSizeKey; label: string; size: PageSize }[] = [
-  { key: 'postcard', label: '4 × 6', size: pageSizes.postcard },
+  // 4 × 6 is off for now (Shaun, 2026-11-10). Put this line back to offer it again:
+  // { key: 'postcard', label: '4 × 6', size: pageSizes.postcard },
   { key: 'card5x7', label: '5 × 7', size: pageSizes.card5x7 },
 ];
 
