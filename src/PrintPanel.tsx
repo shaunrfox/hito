@@ -1,6 +1,8 @@
 import {
   type CardSizeKey,
+  type CardStyle,
   cardSizes,
+  cardStyles,
   formatInches,
   largestMargin,
   MARGIN,
@@ -16,6 +18,8 @@ type PrintPanelProps = {
   onSize: (key: CardSizeKey) => void;
   onOrientation: (orientation: Orientation) => void;
   onMargin: (margin: number) => void;
+  cardStyle: CardStyle;
+  onStyle: (style: CardStyle) => void;
   onGuide: (show: boolean) => void;
   /** Called when the margin slider hits the largest margin that fits. */
   onLimit: () => void;
@@ -41,6 +45,8 @@ export const PrintPanel = ({
   onSize,
   onOrientation,
   onMargin,
+  cardStyle,
+  onStyle,
   onGuide,
   onLimit,
 }: PrintPanelProps) => {
@@ -131,6 +137,45 @@ export const PrintPanel = ({
           aria-valuetext={formatInches(margin)}
         />
         <span className="panel-value">{formatInches(margin)}</span>
+      </div>
+
+      <div className="panel-field">
+        <span className="panel-label" id="style-label">
+          Style
+        </span>
+        <div className="button-group" role="group" aria-labelledby="style-label">
+          {cardStyles.map((option) => (
+            <button
+              key={option.key}
+              type="button"
+              className={`button icon swatch${cardStyle === option.key ? ' selected' : ''}`}
+              aria-pressed={cardStyle === option.key}
+              aria-label={option.label}
+              title={option.label}
+              onClick={() => onStyle(option.key)}
+            >
+              <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden>
+                <rect
+                  x="1.5"
+                  y="1.5"
+                  width="17"
+                  height="17"
+                  rx="2"
+                  fill={option.field}
+                  stroke="rgba(17, 17, 17, 0.25)"
+                  strokeWidth="1"
+                />
+                <path
+                  d="M4 8h4v4h4v-4h4"
+                  fill="none"
+                  stroke={option.stitch}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          ))}
+        </div>
       </div>
 
     </div>

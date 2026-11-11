@@ -3,6 +3,7 @@ import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
 import {
   type CardSizeKey,
+  type CardStyle,
   capacity,
   cardInches,
   cardSizes,
@@ -29,13 +30,18 @@ const FULL = 'This card is full. Try a smaller margin or a bigger card.';
 const CardFace = ({
   margin,
   scale,
+  cardStyle,
   children,
 }: {
   margin: number;
   scale: number;
+  cardStyle: CardStyle;
   children: ReactNode;
 }) => (
-  <div className="card" style={{ padding: `${String(margin)}in` }}>
+  <div
+    className={`card style-${cardStyle}`}
+    style={{ padding: `${String(margin)}in` }}
+  >
     <div className="card-scale" style={{ transform: `scale(${String(scale)})` }}>
       {children}
     </div>
@@ -49,9 +55,14 @@ export const App = () => {
   const [sizeKey, setSizeKey] = useState<CardSizeKey>(initial.sizeKey);
   const [orientation, setOrientation] = useState<Orientation>(initial.orientation);
   const [margin, setMargin] = useState(initial.margin);
+  const [cardStyle, setCardStyle] = useState<CardStyle>(initial.style);
   const [guide, setGuide] = useState(false);
   const [notice, setNotice] = useState<NoticeMessage | null>(null);
   const fancy = useKonami();
+  // The Konami code still works, and it picks Framed for the card too.
+  useEffect(() => {
+    if (fancy) setCardStyle('framed');
+  }, [fancy]);
   const warnFull = useCallback(
     () => setNotice({ text: FULL, id: Date.now() }),
     [],
@@ -131,8 +142,8 @@ export const App = () => {
 
   // Keep the URL in step, so a refresh keeps the card and the link can be shared.
   useEffect(() => {
-    writeState({ h, v, mode, sizeKey, orientation, margin });
-  }, [h, v, mode, sizeKey, orientation, margin]);
+    writeState({ h, v, mode, sizeKey, orientation, margin, style: cardStyle });
+  }, [h, v, mode, sizeKey, orientation, margin, cardStyle]);
 
   // The printer reads the paper size from the @page rule.
   useEffect(() => {
@@ -166,7 +177,7 @@ export const App = () => {
                 showMargins={guide}
                 className="paper"
               >
-                <CardFace margin={margin} scale={scale}>
+                <CardFace margin={margin} scale={scale} cardStyle={cardStyle}>
                   <Composition
                     variant="composition"
                     h={h}
@@ -176,7 +187,7 @@ export const App = () => {
                     maxAcross={Math.max(cap.across, across)}
                     maxDown={Math.max(cap.down, down)}
                     onLimit={warnFull}
-                    fancy={fancy}
+                    fancy={cardStyle === 'framed'}
                   />
                 </CardFace>
               </PrintPage>
@@ -190,6 +201,8 @@ export const App = () => {
               onSize={(key) => choose(key, orientation)}
               onOrientation={(o) => choose(sizeKey, o)}
               onMargin={setMargin}
+              cardStyle={cardStyle}
+              onStyle={setCardStyle}
               onGuide={setGuide}
               onLimit={warnFull}
             />
@@ -231,8 +244,13 @@ export const App = () => {
         aria-hidden
         style={{ width: `${String(inches.width)}in`, height: `${String(inches.height)}in` }}
       >
-        <CardFace margin={margin} scale={scale}>
-          <Composition variant="composition" h={h} v={v} fancy={fancy} />
+        <CardFace margin={margin} scale={scale} cardStyle={cardStyle}>
+          <Composition
+            variant="composition"
+            h={h}
+            v={v}
+            fancy={cardStyle === 'framed'}
+          />
         </CardFace>
       </div>
     </>

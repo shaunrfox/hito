@@ -1,4 +1,10 @@
-import { type CardSizeKey, MARGIN, type Orientation } from './cards';
+import {
+  type CardSizeKey,
+  type CardStyle,
+  cardStyles,
+  MARGIN,
+  type Orientation,
+} from './cards';
 
 export type Mode = 'edit' | 'print';
 
@@ -9,9 +15,11 @@ export type AppState = {
   sizeKey: CardSizeKey;
   orientation: Orientation;
   margin: number;
+  style: CardStyle;
 };
 
 export const DEFAULTS: AppState = {
+  style: 'plain',
   h: 'HITOMEZASHI',
   v: 'HITOMEZASHI',
   mode: 'edit',
@@ -52,6 +60,9 @@ export const readState = (search = window.location.search): AppState => {
     state.orientation = orientation;
   }
 
+  const style = cardStyles.find((s) => s.key === params.get('style'));
+  if (style) state.style = style.key;
+
   const margin = Number(params.get('margin'));
   if (params.has('margin') && Number.isFinite(margin)) {
     const snapped = Math.round(margin / MARGIN.step) * MARGIN.step;
@@ -72,6 +83,7 @@ export const toSearch = (state: AppState) => {
     params.set('orientation', state.orientation);
   }
   if (state.margin !== DEFAULTS.margin) params.set('margin', String(state.margin));
+  if (state.style !== DEFAULTS.style) params.set('style', state.style);
   const query = params.toString();
   return query ? `?${query}` : '';
 };

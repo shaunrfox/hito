@@ -175,7 +175,7 @@ body {
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 1px;
-  color: #111;
+  color: var(--ink, #111);
 }
 
 .wrapper {
@@ -276,7 +276,7 @@ body {
 .v-line {
   position: absolute;
   box-sizing: content-box;
-  border: calc(var(--line-width) / 2) solid #b4d4e3;
+  border: calc(var(--line-width) / 2) solid var(--stitch, #b4d4e3);
   z-index: 2;
   border-radius: 10px;
   -webkit-print-color-adjust: exact;
@@ -366,6 +366,34 @@ body {
   height: 100%;
 }
 
+/* - - - Card styles - - - */
+
+/* The field fills the card inside the margins: a background clipped to the
+   content box, so the margin stays paper white. */
+.card {
+  background-clip: content-box;
+  background-color: var(--field, transparent);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.card.style-indigo {
+  --field: #22325a;
+  --stitch: #f1e9d6;
+  --ink: #f1e9d6;
+}
+
+.card.style-red {
+  --field: #f6efe0;
+  --stitch: #b5322b;
+  --ink: #3a2a22;
+}
+
+/* Swatch buttons in the panel */
+.button.swatch {
+  width: 38px;
+}
+
 .card-scale {
   flex-shrink: 0;
   isolation: isolate;
@@ -383,6 +411,8 @@ body {
   align-items: flex-end;
   gap: 28px;
   padding: 14px 22px 16px;
+  /* Fixed at left 50%, so size to the content, not to half the screen. */
+  width: max-content;
   max-width: calc(100vw - 32px);
   flex-wrap: wrap;
   background: rgba(255, 255, 255, 0.92);
