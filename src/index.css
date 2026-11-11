@@ -349,6 +349,10 @@ body {
   background: var(--dot);
   border-radius: var(--dot-radius, 50%);
   transform: translate(-50%, -50%) rotate(var(--dot-rotate, 0deg));
+  /* Above the stitches (z-index 2). Each cell is its own stacking context,
+     and the stitches that end at this point belong to this cell or an
+     earlier one, so the dot paints over all of them. */
+  z-index: 3;
 }
 
 /* Corners: a shape where a top stitch and a left stitch meet */

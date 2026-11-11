@@ -19,7 +19,7 @@ export const styles: StyleDef[] = [
     key: 'fine',
     label: 'Fine',
     parts: ['point-dots'],
-    vars: { '--line-width': '1.5px', '--dot-size': '3px' },
+    vars: { '--line-width': '1.5px', '--dot-size': '4.5px' },
   },
   {
     key: 'running',
