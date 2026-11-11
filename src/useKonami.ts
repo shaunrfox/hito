@@ -19,7 +19,9 @@ export const useKonami = () => {
   useEffect(() => {
     let keys: string[] = [];
     const onKey = (event: KeyboardEvent) => {
-      keys = [...keys, event.key].slice(-10);
+      // Lowercase single letters, so Shift or Caps Lock still counts.
+      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+      keys = [...keys, key].slice(-10);
       if (keys.join() === CODE) {
         setFancy(true);
         console.log('+ - - - - - - - +');

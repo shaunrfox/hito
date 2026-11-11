@@ -32,7 +32,10 @@ export const Phrase = ({
     const onBeforeInput = (event: InputEvent) => {
       if (!event.inputType.startsWith('insert')) return;
       const added = Array.from(
-        event.data ?? event.dataTransfer?.getData('text/plain') ?? '',
+        (event.data ?? event.dataTransfer?.getData('text/plain') ?? '').replace(
+          /[\r\n]/g,
+          '',
+        ),
       ).length;
       const selection = window.getSelection();
       const selected =
@@ -75,9 +78,21 @@ export const Phrase = ({
       aria-label={axis === 'h' ? 'Word across' : 'Word down'}
       onInput={(event) => {
         const el = event.currentTarget;
-        const text = (el.textContent ?? '').replace(/\n/g, '');
+        const raw = el.textContent ?? '';
+        const text = raw.replace(/[\r\n]/g, '');
         // Leave the element truly empty so :empty shows the placeholder.
         if (text === '' && el.innerHTML !== '') el.innerHTML = '';
+        // A pasted line break: drop it here, and keep the caret at the end.
+        // Otherwise the sync below rewrites the text and the caret jumps to the start.
+        if (text !== '' && text !== raw) {
+          el.textContent = text;
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          range.collapse(false);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        }
         onChange?.(text);
       }}
       onKeyDown={(event) => {

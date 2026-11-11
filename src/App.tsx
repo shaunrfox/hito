@@ -15,9 +15,11 @@ import {
 import { Composition } from './Composition';
 import { type NoticeMessage, Notice } from './Notice';
 import { PrintPanel } from './PrintPanel';
+import { type Mode, readState, writeState } from './urlState';
 import { useKonami } from './useKonami';
 
-type Mode = 'edit' | 'print';
+// Read once, so a refresh or a shared link opens the same card.
+const initial = readState();
 
 const ORIENTATIONS: Orientation[] = ['portrait', 'landscape'];
 
@@ -41,12 +43,12 @@ const CardFace = ({
 );
 
 export const App = () => {
-  const [h, setH] = useState('HITOMEZASHI');
-  const [v, setV] = useState('HITOMEZASHI');
-  const [mode, setMode] = useState<Mode>('edit');
-  const [sizeKey, setSizeKey] = useState<CardSizeKey>('postcard');
-  const [orientation, setOrientation] = useState<Orientation>('portrait');
-  const [margin, setMargin] = useState(MARGIN.initial);
+  const [h, setH] = useState(initial.h);
+  const [v, setV] = useState(initial.v);
+  const [mode, setMode] = useState<Mode>(initial.mode);
+  const [sizeKey, setSizeKey] = useState<CardSizeKey>(initial.sizeKey);
+  const [orientation, setOrientation] = useState<Orientation>(initial.orientation);
+  const [margin, setMargin] = useState(initial.margin);
   const [guide, setGuide] = useState(false);
   const [notice, setNotice] = useState<NoticeMessage | null>(null);
   const fancy = useKonami();
@@ -126,6 +128,11 @@ export const App = () => {
     setOrientation(o);
     if (m !== null) setMargin((current) => Math.min(current, m));
   };
+
+  // Keep the URL in step, so a refresh keeps the card and the link can be shared.
+  useEffect(() => {
+    writeState({ h, v, mode, sizeKey, orientation, margin });
+  }, [h, v, mode, sizeKey, orientation, margin]);
 
   // The printer reads the paper size from the @page rule.
   useEffect(() => {
