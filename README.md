@@ -35,6 +35,19 @@ npm run dev
 
 Build with `npm run build`. The output is a static site in `dist/`.
 
+## Deploy
+
+GitHub Pages serves the `gh-pages` branch at https://shaunfox.com/hito/. The build uses the base path `/hito/`.
+
+```sh
+npm run build
+git worktree add /tmp/hito-pages gh-pages
+rsync -a --delete --exclude .git dist/ /tmp/hito-pages/
+touch /tmp/hito-pages/.nojekyll
+cd /tmp/hito-pages && git add -A && git commit -m "Deploy" && git push origin gh-pages
+cd - && git worktree remove /tmp/hito-pages
+```
+
 ## Stack
 
 Vite, React, TypeScript, and [Panda CSS](https://panda-css.com/), with [`@okshaun/components`](https://www.npmjs.com/package/@okshaun/components). The print preview uses its `PrintPreview` and `PrintPage` components.
