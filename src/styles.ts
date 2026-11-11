@@ -7,25 +7,19 @@ import type { CSSProperties } from 'react';
  */
 
 /** Optional parts a style can turn on. Each one is a `has-<part>` class. */
-type Part = 'frame' | 'ground' | 'dots' | 'point-dots' | 'corners';
+type Part = 'frame' | 'ground' | 'dots' | 'corners';
 
-export type StyleKey = 'plain' | 'fine' | 'running' | 'seeds' | 'petals' | 'framed';
+export type StyleKey = 'plain' | 'running' | 'seeds' | 'petals' | 'framed';
 
 type StyleDef = { key: StyleKey; label: string; parts: Part[]; vars: Record<string, string> };
 
 export const styles: StyleDef[] = [
   { key: 'plain', label: 'Plain', parts: [], vars: {} },
   {
-    key: 'fine',
-    label: 'Fine',
-    parts: ['point-dots'],
-    vars: { '--line-width': '1.5px', '--dot-size': '4.5px' },
-  },
-  {
     key: 'running',
     label: 'Running stitch',
     parts: [],
-    vars: { '--line-width': '3px', '--gap': '8px' },
+    vars: { '--line-width': '2.5px', '--gap': '10px' },
   },
   {
     key: 'seeds',
